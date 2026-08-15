@@ -33,12 +33,12 @@ Built a dedicated private subnet within an existing VPC and gave it its own rout
 
 **Skills:** Private subnets, route table design, Network ACLs, zero-trust security baseline
 
-### 6. [Launching VPC Resources](./Launching%20VPC%20Resources)
+### 6. [Launching VPC Resources](./Launching%20VPC%20resources)
 Deployed a public EC2 instance into a custom VPC's public subnet with a dedicated public Security Group, and a private EC2 instance into the private subnet with a Security Group scoped to only accept SSH traffic originating from the public instance. Set up SSH key pairs for secure instance access, and used the AWS "VPC and more" quick-create feature to provision an entire VPC topology, including subnets, route tables, and NAT gateways, in minutes while meeting high-availability standards across Availability Zones.
 
 **Skills:** EC2 deployment, SSH key pairs, tiered Security Groups, NAT gateways, high-availability subnet design
 
-### 7. [Testing VPC Connectivity](./Testing%20VPC%20Connectivity)
+### 7. [Testing VPC Connectivity](./Testing%20VPC%20connectivity)
 Tested and troubleshot connectivity between EC2 instances in public and private subnets, using EC2 Instance Connect, ping, and curl to diagnose issues. Resolved a blocked SSH connection by adding a missing Security Group inbound rule, and restored instance-to-instance connectivity by adding the correct Network ACL and Security Group rules for ICMP traffic.
 
 **Skills:** Network troubleshooting, EC2 Instance Connect, Security Groups, Network ACLs, ping/curl diagnostics
