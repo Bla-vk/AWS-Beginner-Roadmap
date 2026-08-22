@@ -43,14 +43,35 @@ Tested and troubleshot connectivity between EC2 instances in public and private 
 
 **Skills:** Network troubleshooting, EC2 Instance Connect, Security Groups, Network ACLs, ping/curl diagnostics
 
+### 8. [VPC Peering](./VPC%20Peering)
+Peered two isolated VPCs (NextWork-1 and NextWork-2) so their EC2 instances could communicate privately over the AWS backbone instead of the public internet, configuring unique CIDR blocks, a peering connection, and updated route tables on both sides. Resolved an EC2 Instance Connect failure caused by disabled auto-assign public IPs by attaching an Elastic IP, then validated the peering connection with a successful cross-VPC ping test after updating a security group to allow inbound ICMP traffic from the peer's CIDR block.
+
+**Skills:** VPC peering, route table configuration, Elastic IP addresses, EC2 Instance Connect, cross-VPC security group rules
+
+### 9. [VPC Monitoring with Flow Logs](./VPC%20Monitoring%20with%20Flow%20Logs)
+Set up VPC Flow Logs to capture all inbound and outbound traffic across a two-VPC peered network, creating an IAM role and custom trust policy to grant Flow Logs permission to publish to CloudWatch. Diagnosed a failed ping test by tracing it to a missing peering connection, resolved it by configuring the peering connection and route tables, then used CloudWatch Logs Insights to query flow log data, including a top-10 byte-transfer analysis by source and destination IP.
+
+**Skills:** VPC Flow Logs, CloudWatch, Logs Insights, IAM roles and trust policies, network traffic analysis
+
+### 10. [Access S3 from a VPC](./Access%20S3%20from%20a%20VPC)
+Launched an EC2 instance into a custom VPC and configured it to interact with an S3 bucket using the AWS CLI, setting up access keys (access key ID, secret access key, region, and output format) to authenticate the instance. Ran CLI commands to list buckets, list bucket contents, and upload a new file, validating each step's success, while noting that an IAM role with least-privilege permissions is the recommended best practice over long-lived access keys.
+
+**Skills:** AWS CLI, IAM access keys, S3 bucket operations, EC2-to-S3 connectivity, least-privilege best practices
+
+### 11. [VPC Endpoints](./VPC%20Endpoints)
+Set up an S3 Gateway Endpoint to move an EC2 instance's S3 traffic off the public internet and onto the AWS private network, updating the public subnet's route table to direct S3-bound traffic through the endpoint. Layered a bucket policy blocking all access not routed through the specific VPC endpoint with an endpoint policy controlling which resources the endpoint could reach, then validated both allow and deny behavior by toggling the endpoint policy's Effect and confirming S3 CLI access succeeded or failed accordingly.
+
+**Skills:** VPC Gateway Endpoints, S3 bucket policies, endpoint policies, private AWS service connectivity, access control validation
+
 ---
 
 ## 🧠 What this roadmap covers end to end
 
-- **Networking:** VPC design, CIDR blocks, public/private subnets, Internet Gateways, NAT gateways, route tables
-- **Security:** Security Groups, Network ACLs, zero-trust private subnet design, least-privilege IAM policy design
+- **Networking:** VPC design, CIDR blocks, public/private subnets, Internet Gateways, NAT gateways, route tables, VPC peering, VPC endpoints
+- **Security:** Security Groups, Network ACLs, zero-trust private subnet design, least-privilege IAM policy design, bucket and endpoint policies
 - **Compute:** EC2 deployment, SSH key pairs, instance-to-instance connectivity
-- **Storage:** S3 static website hosting, bucket policies, ACLs
+- **Storage:** S3 static website hosting, bucket policies, ACLs, private S3 access via VPC endpoints
+- **Observability:** VPC Flow Logs, CloudWatch, Logs Insights queries
 - **Tooling:** AWS Console, AWS CLI, AWS CloudShell, IAM Policy Simulator, EC2 Global View, EC2 Instance Connect, ping/curl
 
 ---
