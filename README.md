@@ -8,7 +8,7 @@ Each folder in this repo is a self-contained project with its own write-up.
 
 ## 📁 Projects in this repo
 
-### 1. [Building a Virtual Private Cloud](./Building%20a%20Virtual%20Private%20Cloud)
+### 1. [Building a Virtual Private Cloud](./04-Building%20a%20Virtual%20Private%20Cloud)
 Built a custom Amazon VPC from scratch, including defining an IPv4 CIDR block, creating public subnets with automatic public IP assignment, and attaching an Internet Gateway for outbound connectivity. Extended the project by provisioning the same VPC, subnet, and Internet Gateway setup using the AWS CLI through CloudShell, comparing console-based and command-line infrastructure workflows.
 
 **Skills:** Amazon VPC, CIDR block design, subnetting, Internet Gateways, AWS CLI, AWS CloudShell
