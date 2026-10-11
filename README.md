@@ -1,100 +1,115 @@
 # AWS Beginner Roadmap ☁️
 
-A hands-on journey through foundational AWS services, built through structured guided projects covering networking, storage, and identity and access management.
+Hands-on AWS projects focused on the services and practices that cloud teams use day to day: VPC networking, IAM and security, S3 and CloudFront, Aurora and DynamoDB, serverless, Kubernetes on EKS, and CI/CD.
 
-Each folder in this repo is a self-contained project with its own write-up.
+Most projects follow NextWork guided project formats. For each one I documented what I built, the problems I hit, and how I fixed them. Every folder is a self-contained project with its own write-up. This page lists the projects most relevant to cloud and DevOps roles.
 
----
-
-## 📁 Projects in this repo
-
-### 1. [Building a Virtual Private Cloud](./Building%20a%20Virtual%20Private%20Cloud)
-Built a custom Amazon VPC from scratch, including defining an IPv4 CIDR block, creating public subnets with automatic public IP assignment, and attaching an Internet Gateway for outbound connectivity. Extended the project by provisioning the same VPC, subnet, and Internet Gateway setup using the AWS CLI through CloudShell, comparing console-based and command-line infrastructure workflows.
-
-**Skills:** Amazon VPC, CIDR block design, subnetting, Internet Gateways, AWS CLI, AWS CloudShell
-
-### 2. [VPC Traffic Flow and Security](./VPC%20Traffic%20Flow%20and%20Security)
-Configured route tables to direct internet-bound traffic to an Internet Gateway, completing the routing layer needed to make a subnet public. Set up Security Group inbound/outbound rules to control HTTP traffic at the instance level, and implemented Network ACLs as a stateless, subnet-level layer of defense alongside them. Deployed additional VPC resources in a second AWS region (Frankfurt) and used EC2 Global View to monitor resources across regions.
-
-**Skills:** Route tables, Security Groups, Network ACLs, multi-region deployment, EC2 Global View
-
-### 3. [Host a Website on S3](./Host%20a%20website%20on%20S3)
-Deployed a static website on Amazon S3, configuring the bucket, uploading site files, and enabling static website hosting with a live public endpoint. Diagnosed a 403 Forbidden error by identifying that object-level permissions, not just bucket-level public access settings, controlled visibility, and resolved it by updating object ACLs. Extended the project with a bucket policy denying deletion of the site's index.html file, validated by confirming a blocked delete attempt.
-
-**Skills:** Amazon S3, static website hosting, bucket policies, ACLs, permissions troubleshooting
-
-### 4. [Cloud Security with AWS IAM](./Cloud%20Security%20with%20AWS%20IAM)
-Provisioned and tagged multiple EC2 instances (production and development) and authored a JSON IAM policy restricting a simulated user to development-tagged resources only. Created IAM users, groups, and an account alias, attaching policies at the group level to enforce scoped access control. Validated the setup end to end: confirmed a restricted IAM user was denied access to the production instance while development actions succeeded, then used the IAM Policy Simulator to test and refine permission scope without disrupting live resources.
-
-**Skills:** AWS IAM, JSON policy authoring, least-privilege access design, IAM Policy Simulator, resource tagging
-
-### 5. [Creating a Private Subnet](./Creating%20a%20Private%20Subnet)
-Built a dedicated private subnet within an existing VPC and gave it its own route table, separate from the VPC's main route table, to prevent any path to the internet gateway. Replaced the default Network ACL, which allows all traffic by default, with a custom deny-all NACL as a zero-trust baseline, requiring every port and protocol to be explicitly declared rather than open by default.
-
-**Skills:** Private subnets, route table design, Network ACLs, zero-trust security baseline
-
-### 6. [Launching VPC Resources](./Launching%20VPC%20Resources)
-Deployed a public EC2 instance into a custom VPC's public subnet with a dedicated public Security Group, and a private EC2 instance into the private subnet with a Security Group scoped to only accept SSH traffic originating from the public instance. Set up SSH key pairs for secure instance access, and used the AWS "VPC and more" quick-create feature to provision an entire VPC topology, including subnets, route tables, and NAT gateways, in minutes while meeting high-availability standards across Availability Zones.
-
-**Skills:** EC2 deployment, SSH key pairs, tiered Security Groups, NAT gateways, high-availability subnet design
-
-### 7. [Testing VPC Connectivity](./Testing%20VPC%20Connectivity)
-Tested and troubleshot connectivity between EC2 instances in public and private subnets, using EC2 Instance Connect, ping, and curl to diagnose issues. Resolved a blocked SSH connection by adding a missing Security Group inbound rule, and restored instance-to-instance connectivity by adding the correct Network ACL and Security Group rules for ICMP traffic.
-
-**Skills:** Network troubleshooting, EC2 Instance Connect, Security Groups, Network ACLs, ping/curl diagnostics
-
-### 8. [VPC Peering](./VPC%20Peering)
-Peered two isolated VPCs (NextWork-1 and NextWork-2) so their EC2 instances could communicate privately over the AWS backbone instead of the public internet, configuring unique CIDR blocks, a peering connection, and updated route tables on both sides. Resolved an EC2 Instance Connect failure caused by disabled auto-assign public IPs by attaching an Elastic IP, then validated the peering connection with a successful cross-VPC ping test after updating a security group to allow inbound ICMP traffic from the peer's CIDR block.
-
-**Skills:** VPC peering, route table configuration, Elastic IP addresses, EC2 Instance Connect, cross-VPC security group rules
-
-### 9. [VPC Monitoring with Flow Logs](./VPC%20Monitoring%20with%20Flow%20Logs)
-Set up VPC Flow Logs to capture all inbound and outbound traffic across a two-VPC peered network, creating an IAM role and custom trust policy to grant Flow Logs permission to publish to CloudWatch. Diagnosed a failed ping test by tracing it to a missing peering connection, resolved it by configuring the peering connection and route tables, then used CloudWatch Logs Insights to query flow log data, including a top-10 byte-transfer analysis by source and destination IP.
-
-**Skills:** VPC Flow Logs, CloudWatch, Logs Insights, IAM roles and trust policies, network traffic analysis
-
-### 10. [Access S3 from a VPC](./Access%20S3%20from%20a%20VPC)
-Launched an EC2 instance into a custom VPC and configured it to interact with an S3 bucket using the AWS CLI, setting up access keys (access key ID, secret access key, region, and output format) to authenticate the instance. Ran CLI commands to list buckets, list bucket contents, and upload a new file, validating each step's success, while noting that an IAM role with least-privilege permissions is the recommended best practice over long-lived access keys.
-
-**Skills:** AWS CLI, IAM access keys, S3 bucket operations, EC2-to-S3 connectivity, least-privilege best practices
-
-### 11. [VPC Endpoints](./VPC%20Endpoints)
-Set up an S3 Gateway Endpoint to move an EC2 instance's S3 traffic off the public internet and onto the AWS private network, updating the public subnet's route table to direct S3-bound traffic through the endpoint. Layered a bucket policy blocking all access not routed through the specific VPC endpoint with an endpoint policy controlling which resources the endpoint could reach, then validated both allow and deny behavior by toggling the endpoint policy's Effect and confirming S3 CLI access succeeded or failed accordingly.
-
-**Skills:** VPC Gateway Endpoints, S3 bucket policies, endpoint policies, private AWS service connectivity, access control validation
-
-### 12. [Aurora Database with EC2](./Aurora%20Database%20with%20EC2)
-Deployed a fully managed Amazon Aurora MySQL cluster designed for high availability, provisioning it alongside an EC2 instance and setting up the key pair and credentials needed to connect the two. Learned the reasoning behind Aurora's cluster architecture, which pairs a write-handling primary instance with read replicas for automatic failover and shared read workload.
-
-**Skills:** Amazon Aurora, relational database clusters, EC2 provisioning, high-availability database design
-
-### 13. [Connect a Web App to Amazon Aurora](./Connect%20a%20Web%20App%20to%20Aurora)
-Built a working web application on EC2 (Apache, PHP, and the MySQL client libraries) and connected it to an Amazon Aurora database for real-time data storage and retrieval. Configured the app's database credentials via a PHP include file, wrote a PHP page that read and wrote employee records to Aurora, and validated the integration end to end by submitting data through the UI and confirming it in the database via direct SQL queries.
-
-**Skills:** Amazon Aurora, EC2 web hosting (Apache/PHP), SQL, database-backed application integration
-
-### 14. [Load Data into DynamoDB](./Load%20Data%20into%20DynamoDB)
-Created multiple DynamoDB tables and loaded them with data entirely through the AWS CLI in CloudShell, working with partition and sort keys to structure each table's primary key. Explored DynamoDB's flexible, schema-less item model firsthand, noting how individual items in the same table can carry different sets of attributes, and adjusted read/write capacity settings to understand how throughput affects cost and performance.
-
-**Skills:** Amazon DynamoDB, NoSQL data modeling, AWS CLI/CloudShell, read/write capacity management
-
-### 15. [Query Data with DynamoDB](./Query%20Data%20with%20DynamoDB)
-Queried DynamoDB tables by partition and sort key via the AWS CLI, working through the strict key requirements that distinguish NoSQL querying from relational SQL, and identified which insights were and weren't easily extractable without a well-modeled key structure. Executed a multi-table transactional write that atomically added a new record to one table while updating a related counter in another, guaranteeing all-or-nothing consistency across both.
-
-**Skills:** DynamoDB querying, partition/sort key design, AWS CLI, transactional writes, NoSQL data modeling
+**Beyond the guided projects:** [AWS Dev Environment with Terraform](https://github.com/Bla-vk/terraform-aws-dev-environment) is an independent project where I rebuilt a VPC and EC2 setup as code and bootstrapped Docker with `user_data`.
 
 ---
 
-## 🧠 What this roadmap covers end to end
+## Contents
 
-- **Networking:** VPC design, CIDR blocks, public/private subnets, Internet Gateways, NAT gateways, route tables, VPC peering, VPC endpoints
-- **Security:** Security Groups, Network ACLs, zero-trust private subnet design, least-privilege IAM policy design, bucket and endpoint policies
-- **Compute:** EC2 deployment, SSH key pairs, instance-to-instance connectivity
-- **Storage:** S3 static website hosting, bucket policies, ACLs, private S3 access via VPC endpoints
-- **Databases:** Amazon Aurora (relational, EC2/PHP-integrated), Amazon DynamoDB (NoSQL, partition/sort keys, transactions)
-- **Observability:** VPC Flow Logs, CloudWatch, Logs Insights queries
-- **Infrastructure as Code:** the VPC and EC2 patterns from this roadmap were later rebuilt in Terraform, see [AWS Dev Environment with Terraform](https://github.com/Bla-vk/terraform-aws-dev-environment)
-- **Tooling:** AWS Console, AWS CLI, AWS CloudShell, IAM Policy Simulator, EC2 Global View, EC2 Instance Connect, ping/curl
+1. [Networking and VPC](#1-networking-and-vpc)
+2. [Identity, Security and Monitoring](#2-identity-security-and-monitoring)
+3. [Storage and Content Delivery](#3-storage-and-content-delivery)
+4. [Databases](#4-databases)
+5. [Serverless and Three-Tier Architecture](#5-serverless-and-three-tier-architecture)
+6. [Containers and Kubernetes (Amazon EKS)](#6-containers-and-kubernetes-amazon-eks)
+7. [CI/CD and Infrastructure as Code](#7-cicd-and-infrastructure-as-code)
+
+---
+
+## 1. Networking and VPC
+
+Core cloud networking: designing a VPC, controlling traffic, connecting networks and monitoring them.
+
+| Project | What I built | Key skills |
+|---|---|---|
+| [Building a Virtual Private Cloud](./04-Building%20a%20Virtual%20Private%20Cloud) | Custom VPC with a CIDR block, public subnet and Internet Gateway, built in the console and again with the AWS CLI in CloudShell. | VPC, CIDR design, subnetting, Internet Gateway, AWS CLI |
+| [VPC Traffic Flow and Security](./05-VPC%20Traffic%20Flow%20and%20Security) | Route tables, Security Groups and Network ACLs to control traffic, plus a second-region deployment monitored with EC2 Global View. | Route tables, Security Groups, NACLs, multi-region |
+| [Creating a Private Subnet](./06-Creating%20a%20Private%20Subnet) | Private subnet with its own route table and a custom deny-all Network ACL as a zero-trust baseline. | Private subnets, route tables, NACLs |
+| [Launching VPC Resources](./07-Launching%20VPC%20resources) | Public and private EC2 instances in a custom VPC with tiered Security Groups, SSH key pairs and NAT gateways across Availability Zones. | EC2, NAT gateway, SSH, high availability |
+| [VPC Peering](./09-VPC%20Peering) | Two isolated VPCs connected privately with a peering connection and route tables, verified with a cross-VPC ping after fixing a Security Group rule. | VPC peering, routing, Elastic IP |
+| [VPC Monitoring with Flow Logs](./10-VPC%20Monitoring%20with%20Flow%20Logs) | VPC Flow Logs delivered to CloudWatch through an IAM role, analysed with Logs Insights, including a top-10 traffic query. | Flow Logs, CloudWatch Logs Insights, IAM roles |
+| [VPC Endpoints](./12-VPC%20Endpoints) | S3 Gateway Endpoint moving traffic off the public internet, locked down with an endpoint policy and a bucket policy, with allow and deny behaviour tested. | VPC endpoints, S3 bucket policies, private connectivity |
+
+## 2. Identity, Security and Monitoring
+
+Least privilege, encryption, secrets handling and alerting.
+
+| Project | What I built | Key skills |
+|---|---|---|
+| [Cloud Security with AWS IAM](./03-Cloud%20Security%20with%20AWS%20IAM) | Tag-based least-privilege JSON policy, IAM users and groups, tested with a restricted user and the IAM Policy Simulator. | IAM, policy authoring, least privilege, Policy Simulator |
+| [Encrypt Data with AWS KMS](./17-Encrypt%20Data%20with%20AWS%20KMS) | Symmetric KMS key used to encrypt a DynamoDB table, with key access tested through IAM user policies. | KMS, encryption at rest, key policies, DynamoDB |
+| [Secure Secrets with Secrets Manager](./19-%20Secure%20Secrets%20with%20Secret%20Manager) | Replaced hardcoded AWS credentials in a sample app with Secrets Manager, and used an interactive Git rebase to remove secrets from commit history. | Secrets Manager, credential hygiene, Git history cleanup |
+| [Build a Security Monitoring System](./20-Build%20a%20Security%20Monitoring%20System) | CloudTrail logging to S3, a CloudWatch filter and alarm, and SNS email alerts for access to a secret, including troubleshooting a missing alert. | CloudTrail, CloudWatch, SNS, alerting |
+
+## 3. Storage and Content Delivery
+
+Hosting and delivering content from S3.
+
+| Project | What I built | Key skills |
+|---|---|---|
+| [Host a Website on S3](./02-Host%20a%20website%20on%20S3) | Static website on S3, with a 403 error fixed through object ACLs and a bucket policy that blocks deleting the site's index file. | S3 static hosting, bucket policies, ACLs |
+| [Website Delivery with CloudFront](./21-Website%20Delivery%20with%20CloudFront) | Website served through CloudFront from a private S3 bucket using Origin Access Control, with load time compared against direct S3 hosting. | CloudFront, Origin Access Control, S3, CDN |
+
+## 4. Databases
+
+Relational and NoSQL data on AWS.
+
+| Project | What I built | Key skills |
+|---|---|---|
+| [Aurora Database with EC2](./13-Aurora%20Database%20with%20EC2) | Managed Amazon Aurora cluster alongside an EC2 instance, with the reasoning behind Aurora's writer and replica architecture. | Aurora, high availability, EC2 |
+| [Connect a Web App to Aurora](./14-Connect%20a%20Web%20App%20with%20Aurora) | Apache and PHP app on EC2 reading and writing employee records in Aurora, verified through the UI and direct SQL queries. | Aurora, MySQL, Apache/PHP, SQL |
+| [Load Data into DynamoDB](./15-Load%20Data%20into%20DynamoDB) | DynamoDB tables created and loaded through the AWS CLI, with partition and sort keys and capacity settings. | DynamoDB, NoSQL modelling, AWS CLI |
+| [Query Data with DynamoDB](./16-Query%20Data%20with%20DynamoDB) | Key-based queries and a multi-table transactional write that keeps related records consistent. | DynamoDB queries, transactions |
+
+## 5. Serverless and Three-Tier Architecture
+
+Building an application without managing servers.
+
+| Project | What I built | Key skills |
+|---|---|---|
+| [APIs with Lambda and API Gateway](./22-API%27s%20with%20Lambda%20%2B%20API%27s%20Gateway) | REST API on API Gateway backed by a Lambda function that looks up user data in DynamoDB by user ID. | Lambda, API Gateway, REST APIs |
+| [Fetch Data with AWS Lambda](./23-Fetch%20Data%20with%20AWS%20Lambda) | Lambda function reading from a DynamoDB table, with a custom inline IAM policy written from scratch. | Lambda, DynamoDB, IAM execution roles |
+| [Build a Three-Tier Web App](./24-Build%20a%20Three-Tier%20Web%20App) | End-to-end app: S3 and CloudFront for presentation, Lambda and API Gateway for logic, DynamoDB for data, including a CORS and 403 issue traced to a URL typo. | S3, CloudFront, Lambda, API Gateway, DynamoDB, CORS |
+
+## 6. Containers and Kubernetes (Amazon EKS)
+
+Running containerised workloads on Kubernetes.
+
+| Project | What I built | Key skills |
+|---|---|---|
+| [Launch a Kubernetes Cluster](./25-Launch%20a%20Kubernetes%20Cluster) | EKS cluster and node group created with eksctl (CloudFormation behind the scenes), including fixing a missing install and IAM permission errors. | EKS, eksctl, CloudFormation, IAM access entries |
+| [Set Up a Kubernetes Deployment](./26-Set%20up%20Kubernetes%20Deployment) | Backend code built into a Docker image and pushed to Amazon ECR, ready for Kubernetes to pull. | Docker, Amazon ECR, EKS |
+| [Create Kubernetes Manifests](./27-Create%20Kubernetes%20Manifests) | Deployment and Service manifests describing how Kubernetes runs the containerised backend. | Kubernetes manifests, Deployments, Services |
+| [Deploy a Backend with Kubernetes](./28-Deploy%20Backend%20with%20Kubernetes) | Containerised backend deployed to the EKS cluster with kubectl from manifests and an ECR image. | kubectl, EKS, ECR, container deployment |
+
+## 7. CI/CD and Infrastructure as Code
+
+Automating build, test and deployment, and defining infrastructure in code.
+
+| Project | What I built | Key skills |
+|---|---|---|
+| [Secure Packages with CodeArtifact](./31-Secure%20Packages%20with%20CodeArtifact) | CodeArtifact domain and repository with Maven Central as upstream, Maven connected, and IAM permissions for the build instance. | CodeArtifact, Maven, IAM |
+| [Continuous Integration with CodeBuild](./32-Continuous%20Integration%20with%20CodeBuild) | Automated build and test with CodeBuild using buildspec.yml and a test script, connected to GitHub through a GitHub App. | CodeBuild, buildspec, CodeConnections |
+| [Deploy a Web App with CodeDeploy](./33-Deploy%20a%20Webapp%20with%20CodeDeploy) | Automated deployment with appspec.yml and deployment scripts into an environment created with CloudFormation, including recovery from a failed deployment. | CodeDeploy, appspec, CloudFormation |
+| [Build a CI/CD Pipeline with AWS](./34-Build%20a%20CICD%20pipeline%20with%20AWS) | CodePipeline connecting GitHub, CodeBuild and CodeDeploy so a code push updates the live app, with rollback and webhooks. | CodePipeline, CI/CD stages, rollbacks |
+| [Create an S3 Bucket with Terraform](./40-Create%20an%20S3%20Bucket%20with%20Terraform) | Introduction to Terraform: provider plugins, state and lock files, and an S3 bucket provisioned from configuration. | Terraform, Infrastructure as Code, S3 |
+
+---
+
+## What this roadmap covers
+
+- **Networking:** VPC design, CIDR blocks, public and private subnets, Internet and NAT gateways, route tables, VPC peering, VPC endpoints, Flow Logs
+- **Security:** IAM least privilege, Security Groups, Network ACLs, KMS encryption, Secrets Manager, CloudTrail, CloudWatch alarms and SNS alerts
+- **Compute:** EC2, Lambda, API Gateway, Amazon EKS with Docker, ECR and kubectl
+- **Storage and delivery:** S3 static hosting, bucket policies, CloudFront with Origin Access Control
+- **Databases:** Amazon Aurora (MySQL) and DynamoDB, including transactions
+- **DevOps:** CodeArtifact, CodeBuild, CodeDeploy, CodePipeline, CloudFormation
+- **Infrastructure as Code:** Terraform fundamentals here, plus a full VPC and EC2 build in the [Terraform project](https://github.com/Bla-vk/terraform-aws-dev-environment)
+- **Tooling:** AWS Console, AWS CLI, CloudShell, eksctl, kubectl, Docker, Git and GitHub
 
 ---
 
@@ -104,12 +119,14 @@ Queried DynamoDB tables by partition and sort key via the AWS CLI, working throu
 ![Amazon VPC](https://img.shields.io/badge/Amazon%20VPC-232F3E?style=flat&logo=amazonaws&logoColor=white)
 ![Amazon S3](https://img.shields.io/badge/Amazon%20S3-569A31?style=flat&logo=amazons3&logoColor=white)
 ![AWS IAM](https://img.shields.io/badge/AWS%20IAM-DD344C?style=flat&logo=amazoniam&logoColor=white)
-![Amazon RDS](https://img.shields.io/badge/Amazon%20Aurora-527FFF?style=flat&logo=amazonrds&logoColor=white)
+![Amazon Aurora](https://img.shields.io/badge/Amazon%20Aurora-527FFF?style=flat&logo=amazonrds&logoColor=white)
 ![DynamoDB](https://img.shields.io/badge/DynamoDB-4053D6?style=flat&logo=amazondynamodb&logoColor=white)
+![AWS Lambda](https://img.shields.io/badge/AWS%20Lambda-FF9900?style=flat&logo=awslambda&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-844FBA?style=flat&logo=terraform&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white)
 
 ---
-
-**Next step:** after building these by hand, I rebuilt the VPC and EC2 setup as code in [AWS Dev Environment with Terraform](https://github.com/Bla-vk/terraform-aws-dev-environment).
 
 More projects, including software development work, are on my [profile](https://github.com/Bla-vk).
